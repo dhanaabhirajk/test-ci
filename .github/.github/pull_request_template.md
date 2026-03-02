@@ -5,9 +5,7 @@
 To run CI, comment on this PR:
 
 ```
-
 /run-ci
-
 ```
 
 ✅ This is required before merge.
