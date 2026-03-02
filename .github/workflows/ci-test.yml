@@ -1,0 +1,16 @@
+name: Costly CI Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  costly-ci:
+    name: Costly CI Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Running costly CI"
