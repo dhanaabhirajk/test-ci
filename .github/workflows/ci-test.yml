@@ -2,15 +2,19 @@ name: Costly CI Check
 
 on:
   pull_request:
-    branches: [main]
-  workflow_dispatch:
+    types: [opened, synchronize, reopened]
 
 jobs:
   costly-ci:
     name: Costly CI Check
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+
+    environment:
+      name: costly-ci
 
     steps:
-      - uses: actions/checkout@v4
-      - run: echo "Running costly CI"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run costly CI
+        run: echo "Running costly CI..."
