@@ -1,15 +1,42 @@
-name: CI Required Reminder
+name: Costly CI Check
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
+  statuses: write
 
 jobs:
-  reminder:
+  costly-ci:
     name: Costly CI Check
+    if: >
+      github.event.issue.pull_request &&
+      github.event.comment.body == '/run-ci'
+
     runs-on: ubuntu-latest
 
     steps:
-      - run: |
-          echo "Please comment '/run-ci' to run CI."
-          exit 1
+      - name: Get PR info
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            core.setOutput("sha", pr.data.head.sha);
+            core.setOutput("ref", pr.data.head.ref);
+
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.sha }}
+
+      - name: Run costly CI
+        run: echo "Running costly CI on ${{ steps.pr.outputs.sha }}"
