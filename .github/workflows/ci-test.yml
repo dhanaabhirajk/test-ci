@@ -1,29 +1,15 @@
-name: Costly CI Check
+name: Costly CI + Deploy
 
 on:
-  issue_comment:
-    types: [created]
-
-permissions:
-  contents: read
-  pull-requests: write
-  checks: write
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  costly-ci:
+  test:
     name: Costly CI Check
-
-    if: >
-      github.event.issue.pull_request &&
-      github.event.comment.body == '/run-ci'
-
     runs-on: ubuntu-latest
+    environment: costly-ci
 
     steps:
-      - name: Checkout PR branch
-        uses: actions/checkout@v4
-        with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
-
-      - name: Run costly CI
-        run: echo "Running costly CI..."
+      - uses: actions/checkout@v4
+      - run: echo "Running costly CI..."
